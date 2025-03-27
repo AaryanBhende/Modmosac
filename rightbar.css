@@ -1,0 +1,15 @@
+.commentsList {
+  margin-top: 10px;
+}
+
+.comment {
+  margin: 5px 0;
+  padding: 5px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+.reply {
+  margin-left: 20px;
+  font-style: italic;
+} 

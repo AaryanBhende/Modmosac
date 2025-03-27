@@ -1,0 +1,1 @@
+<Rightbar user={user} post={post} /> 

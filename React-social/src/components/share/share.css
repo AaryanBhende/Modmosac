@@ -1,0 +1,152 @@
+.share {
+  width: 100%;
+  border-radius: 10px;
+  background-color: #282b30;
+  -webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+  box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+}
+
+.shareWrapper {
+  padding: 10px;
+}
+
+.shareTop {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+}
+
+.shareProfileImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.shareInput {
+  flex: 1;
+  border: none;
+  background-color: #3a3b3c;
+  color: #ffffff;
+  padding: 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.shareInput::placeholder {
+  color: #b0b3b8;
+}
+
+.shareInput:focus {
+  outline: none;
+}
+
+.shareIcon[label="sharePhoto"] {
+  transform: translateY(-2.5px);
+}
+
+.shareOptionText[label="sharePhoto"] {
+  transform: translateY(-2.5px);
+}
+.shareHr {
+  margin: 10px;
+  border: none;
+  border-top: 1px solid #3e4042;
+}
+
+.shareBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px 10px;
+}
+
+.shareOptions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  width: 100%;
+}
+
+.shareOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  min-width: 100px;
+}
+
+.shareOption:hover {
+  background-color: #3a3b3c;
+}
+
+.shareOption label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.shareIcon {
+  font-size: 20px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+.sharePhoto {
+  
+}
+
+.shareOptionText {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e4e6eb;
+  white-space: nowrap;
+}
+
+.shareButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #1877f2;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.shareButton:hover {
+  background-color: #166fe5;
+}
+
+.shareImgContainer {
+  padding: 0 15px;
+  position: relative;
+}
+
+.shareImg {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.shareCancelImg {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  cursor: pointer;
+  padding: 5px;
+  background-color: #3a3b3c;
+  border-radius: 50%;
+  color: #e4e6eb;
+}
+
+/* Hide the file input but keep it accessible */
+input[type="file"] {
+  display: none;
+}

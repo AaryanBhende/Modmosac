@@ -1,0 +1,36 @@
+.feedTitle {
+  margin: 20px;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.noBookmarks {
+  text-align: center;
+  padding: 40px;
+  color: #65676b;
+  font-size: 16px;
+}
+
+.loadingIndicator {
+  text-align: center;
+  padding: 20px;
+  color: #65676b;
+}
+
+.bookmarkTitle {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 20px;
+  color: #f0f2f5;
+}
+
+.loadingBookmarks {
+  text-align: center;
+  padding: 20px;
+  color: #65676b;
+}
+
+.feedWrapper {
+  padding: 20px;
+} 
