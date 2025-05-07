@@ -1,19 +1,23 @@
+/* File: src/components/share/share.css */
+
 .share {
   width: 100%;
-  border-radius: 10px;
   background-color: #282b30;
-  -webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
-  box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+  border-radius: 10px;
+  box-shadow: 0 0 16px -8px rgba(0, 0, 0, 0.68);
 }
 
 .shareWrapper {
-  padding: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .shareTop {
   display: flex;
   align-items: center;
-  padding: 10px 15px;
+  gap: 12px;
 }
 
 .shareProfileImg {
@@ -21,7 +25,6 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 10px;
 }
 
 .shareInput {
@@ -29,7 +32,7 @@
   border: none;
   background-color: #3a3b3c;
   color: #ffffff;
-  padding: 12px;
+  padding: 10px 16px;
   border-radius: 20px;
   font-size: 14px;
 }
@@ -42,63 +45,59 @@
   outline: none;
 }
 
-.shareIcon[label="sharePhoto"] {
-  transform: translateY(-2.5px);
-}
-
-.shareOptionText[label="sharePhoto"] {
-  transform: translateY(-2.5px);
-}
 .shareHr {
-  margin: 10px;
+  margin: 10px 0;
   border: none;
   border-top: 1px solid #3e4042;
 }
 
 .shareBottom {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 15px 10px;
+  flex-direction: column;
+  gap: 24px; /* increased gap for cleaner spacing */
+  align-items: center; /* center everything including the button */
 }
 
 .shareOptions {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 15px;
-  width: 100%;
+  flex-wrap: wrap;
+  gap: 16px; /* slightly bigger gap between options */
+  justify-content: center;
 }
 
+
 .shareOption {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
   cursor: pointer;
-  padding: 8px 10px;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-  min-width: 100px;
+  padding: 10px 16px; /* more padding for a cleaner button look */
+  border-radius: 10px; /* slightly rounder */
+  background-color: #36393e;
+  transition: background-color 0.3s;
+  position: relative;
 }
 
 .shareOption:hover {
-  background-color: #3a3b3c;
+  background-color: #40444b;
 }
 
-.shareOption label {
-  display: flex;
+.fileUploadLabel {
+  all: unset;
+  display: inline-flex;
   align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
   cursor: pointer;
 }
 
-.shareIcon {
-  font-size: 20px;
-  margin-right: 8px;
-  display: flex;
-  align-items: center;
+input[type="file"] {
+  display: none;
 }
-.sharePhoto {
-  
+
+.shareIcon {
+  font-size: 20px !important;
 }
 
 .shareOptionText {
@@ -109,14 +108,15 @@
 }
 
 .shareButton {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
+  padding: 8px 20px; /* slightly slimmer button */
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
   background-color: #1877f2;
   color: white;
-  font-weight: 600;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s;
 }
 
 .shareButton:hover {
@@ -124,29 +124,103 @@
 }
 
 .shareImgContainer {
-  padding: 0 15px;
   position: relative;
 }
 
 .shareImg {
   width: 100%;
-  object-fit: cover;
   border-radius: 8px;
-  margin-top: 10px;
+  object-fit: cover;
 }
 
 .shareCancelImg {
   position: absolute;
-  top: 15px;
-  right: 20px;
-  cursor: pointer;
-  padding: 5px;
+  top: 10px;
+  right: 16px;
   background-color: #3a3b3c;
   border-radius: 50%;
+  padding: 4px;
   color: #e4e6eb;
+  cursor: pointer;
 }
 
-/* Hide the file input but keep it accessible */
-input[type="file"] {
-  display: none;
+.tagContainer, .locationDisplay, .feelingDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background-color: #f0f2f5;
+  padding: 8px 12px;
+  border-radius: 16px;
+}
+
+.tag {
+  background-color: #e4e6eb;
+  padding: 4px 10px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.tagRemove {
+  cursor: pointer;
+  font-size: 16px;
+  color: #65676b;
+}
+
+.tagRemove:hover {
+  color: #1877f2;
+}
+
+.inputContainer {
+  margin-top: 8px;
+}
+
+.tagInput, .locationInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e4e6eb;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.emotionsScrollContainer {
+  margin-top: 8px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+  padding: 8px;
+  overflow-x: auto;
+}
+
+.emotionsContainer {
+  display: flex;
+  gap: 12px;
+}
+
+.emotionItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.emotionItem:hover {
+  background-color: #f0f2f5;
+}
+
+.emotionEmoji {
+  font-size: 24px;
+}
+
+.emotionText {
+  font-size: 12px;
+  color: #65676b;
+  white-space: nowrap;
 }

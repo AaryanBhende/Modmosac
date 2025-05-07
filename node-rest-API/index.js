@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postsRoute = require("./routes/posts");
+const searchRoute = require("./routes/search");
 const multer = require("multer");
 const path = require("path");
 const server = require("http").createServer(app);
@@ -15,9 +16,9 @@ const io = require("socket.io")(server, {
     origin: "http://localhost:3000",
   },
 });
+const commentsRoute = require("./routes/comments");
 
 dotenv.config();
-
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {
@@ -27,7 +28,6 @@ mongoose.connect(process.env.MONGO_URL)
     console.error("DB Connection Error:", err.message);
   });
 
-  
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 //middleware
@@ -56,33 +56,35 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/posts", postsRoute);
+app.use("/api/comments", commentsRoute);
+app.use("/api/search", searchRoute);
 
-// Keep track of online users
-let onlineUsers = [];
+let onlineUsers = new Map();
 
-// Socket.io connection
 io.on("connection", (socket) => {
   console.log("A user connected");
-  
-  // Add user to online users
+
+  // When user connects
   socket.on("addUser", (userId) => {
-    const userExists = onlineUsers.some(user => user.userId === userId);
-    if (!userExists) {
-      onlineUsers.push({
-        userId: userId,
-        socketId: socket.id,
-      });
+    if (!onlineUsers.has(userId)) {
+      onlineUsers.set(userId, socket.id);
+      io.emit("getOnlineUsers", Array.from(onlineUsers.keys()));
     }
-    io.emit("getOnlineUsers", onlineUsers.map(user => user.userId));
   });
 
-  // Remove user when they disconnect
+  // When user disconnects
   socket.on("disconnect", () => {
-    onlineUsers = onlineUsers.filter(user => user.socketId !== socket.id);
-    io.emit("getOnlineUsers", onlineUsers.map(user => user.userId));
     console.log("A user disconnected");
+    for (let [userId, socketId] of onlineUsers) {
+      if (socketId === socket.id) {
+        onlineUsers.delete(userId);
+        break;
+      }
+    }
+    io.emit("getOnlineUsers", Array.from(onlineUsers.keys()));
   });
 });
+
 
 // Change app.listen to server.listen
 server.listen(8800, () => {

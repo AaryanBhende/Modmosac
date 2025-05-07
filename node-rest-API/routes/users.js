@@ -1,9 +1,9 @@
 const router = require("express").Router();
-const User = require("../models/User"); // Adjust the path as necessary
-const bcrypt = require("bcrypt"); // Add this line to import bcrypt
+const User = require("../models/User"); 
+const bcrypt = require("bcrypt"); 
 const multer = require("multer");
 const path = require("path");
-const Post = require("../models/Post"); // Adjust the path as necessary
+const Post = require("../models/Post"); 
 
 // Configure multer for file upload
 const storage = multer.diskStorage({

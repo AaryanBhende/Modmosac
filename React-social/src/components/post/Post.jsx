@@ -1,10 +1,11 @@
-   import "./post.css";
-import { MoreVert, Bookmark, BookmarkBorder } from '@mui/icons-material';
+import "./post.css";
+import { MoreVert, Bookmark, BookmarkBorder, Room } from '@mui/icons-material';
 import { useEffect, useContext, useState, useRef } from "react";
 import axios from "axios";
 import { format } from "timeago.js";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import Comment from "../comment/Comment";
 
 export default function Post({ post }) {
   const [like, setLike] = useState(post.likes.length);
@@ -12,6 +13,9 @@ export default function Post({ post }) {
   const [user, setUser] = useState({});
   const [showOptions, setShowOptions] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [showComments, setShowComments] = useState(false);
+  const [newComment, setNewComment] = useState("");
   const PF = process.env.REACT_APP_PUBLIC_FOLDER; 
   const { user: currentUser } = useContext(AuthContext);
   const optionsRef = useRef();
@@ -45,14 +49,12 @@ export default function Post({ post }) {
   }, [currentUser._id, post._id]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (optionsRef.current && !optionsRef.current.contains(event.target)) {
-        setShowOptions(false);
-      }
+    const fetchComments = async () => {
+      const res = await axios.get(`/comments/${post._id}`);
+      setComments(res.data || []);
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    fetchComments();
+  }, [post._id]);
 
   const likeHandler = () => {
     try {
@@ -75,6 +77,22 @@ export default function Post({ post }) {
     }
   };
 
+  const toggleComments = () => {
+    setShowComments(!showComments);
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("/comments", { postId: post._id, userId: currentUser._id, text: newComment });
+      setNewComment("");
+      const res = await axios.get(`/comments/${post._id}`);
+      setComments(res.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="post">
       <div className="postWrapper">
@@ -91,23 +109,41 @@ export default function Post({ post }) {
                 alt=""
               />
             </Link>
-            <span className="postUsername">{user.username}</span>
-            <span className="postDate">{format(post.createdAt)}</span>
-          </div>
-          <div className="postTopRight" ref={optionsRef}>
-            <MoreVert onClick={() => setShowOptions(!showOptions)} className="postOptionsIcon" />
-            {showOptions && (
-              <div className="postOptions">
-                <button onClick={handleBookmark}>
-                  {isBookmarked ? "Remove Bookmark" : "Bookmark"}
-                </button>
+            <div className="postUserInfo">
+              <span className="postUsername">{user.username}</span>
+              <div className="postMetadata">
+                {post.feeling && (
+                  <span className="postFeeling">
+                    is feeling {post.feeling}
+                  </span>
+                )}
+                {post.location && (
+                  <span className="postLocation">
+                    <Room fontSize="small" /> {post.location}
+                  </span>
+                )}
+                <span className="postDate">{format(post.createdAt)}</span>
               </div>
-            )}
+            </div>
+          </div>
+          <div className="postTopRight">
+            <div className="bookmarkIcon" onClick={handleBookmark}>
+              {isBookmarked ? <Bookmark /> : <BookmarkBorder />}
+            </div>
           </div>
         </div>
         <div className="postCenter">
           <span className="postText">{post?.desc}</span>
-          <img className="postImg" src={post.img ? PF + post.img : PF + ""} alt="" />
+          {post.tags && post.tags.length > 0 && (
+            <div className="postTags">
+              {post.tags.map((tag, index) => (
+                <span key={index} className="postTag">#{tag}</span>
+              ))}
+            </div>
+          )}
+          {post.img && (
+            <img className="postImg" src={PF + post.img} alt="" />
+          )}
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">
@@ -120,13 +156,34 @@ export default function Post({ post }) {
             <span className="postLikeCounter">{like} people like it</span>
           </div>
           <div className="postBottomRight">
-            <span className="postCommentText">{post.comment} comments</span>
-            <div className="bookmarkIcon" onClick={handleBookmark}>
-              {isBookmarked ? <Bookmark /> : <BookmarkBorder />}
-            </div>
+            <span className="postCommentText" onClick={toggleComments}>
+              {comments.length} comments
+            </span>
           </div>
         </div>
       </div>
+      {showComments && (
+        <div className="commentSection">
+          <form onSubmit={handleCommentSubmit} className="commentInputContainer">
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              className="commentInput"
+            />
+            <button type="submit" className="postButton">Post</button>
+          </form>
+          <h4>Comments</h4>
+          {comments && comments.length > 0 ? (
+            comments.map((comment) => (
+              <Comment key={comment._id} comment={comment} />
+            ))
+          ) : (
+            <p>No comments yet.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

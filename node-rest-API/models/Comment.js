@@ -13,8 +13,15 @@ const CommentSchema = new mongoose.Schema(
     text: {
       type: String,
       required: true,
-      max: 500,
     },
+    parentId: {
+      type: String, // To store the ID of the parent comment if it's a reply
+      default: null,
+    },
+    replies: [{
+      userId: String,
+      text: String,
+    }],
   },
   { timestamps: true }
 );

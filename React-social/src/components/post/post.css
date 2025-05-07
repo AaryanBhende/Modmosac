@@ -20,7 +20,8 @@
 
 .postTopLeft {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex: 1;
 }
 
 .postProfileImg {
@@ -31,14 +32,14 @@
 }
 
 .postUsername {
-  font-size: 15px;
   font-weight: 500;
-  margin: 0 10px;
+  margin-right: 10px;
+  font-size: 15px;
 }
 
 .postDate {
   font-size: 12px;
-  color: #7289da; /* Updated date color */
+  color: #65676b;
 }
 
 .postCenter {
@@ -91,17 +92,6 @@
   cursor: pointer;
 }
 
-.postOptions {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 1000;
-  padding: 8px 0;
-}
-
 .postOptions button {
   display: block;
   width: 100%;
@@ -117,15 +107,181 @@
   background-color: #f0f2f5;
 }
 
-.bookmarkIcon {
-  cursor: pointer;
-  color: #7289da; /* Match the theme color */
+.postTopRight {
   display: flex;
   align-items: center;
 }
 
+.bookmarkIcon {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
 .bookmarkIcon:hover {
-  opacity: 0.7;
+  background-color: #f0f2f5;
+}
+
+.commentSection {
+  margin: 20px auto; /* Center the comment section */
+  padding: 15px; /* Padding around the comment section */
+  background-color: #2c2f33; /* Background color for the comment section */
+  border-radius: 8px; /* Rounded corners */
+  border: 1px solid #444; /* Border for better definition */
+  max-width: 600px; /* Set a max width for the comment section */
+}
+
+.commentInputContainer {
+  display: flex; /* Flexbox for alignment */
+  align-items: center; /* Center items vertically */
+  margin-bottom: 15px; /* Space below the input */
+  justify-content: center; /* Center the input and button */
+  margin-top: 10px;
+}
+
+.commentInput {
+  width: 100%; /* Full width for the input */
+  background-color: #3a3f43; /* Background color */
+  border: 1px solid #555; /* Border color */
+  border-radius: 5px; /* Rounded corners */
+  padding: 8px; /* Padding inside the input */
+  color: white; /* Text color */
+}
+
+.commentInput::placeholder {
+  color: #aaa; /* Placeholder text color */
+}
+
+.postButton {
+  padding: 10px 15px; /* Padding for the button */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners for the button */
+  background-color: #7289da; /* Button background color */
+  color: #ffffff; /* Button text color */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 14px; /* Font size for the button */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.postButton:hover {
+  background-color: #5b6e9e; /* Darker shade on hover */
+}
+
+.comment {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid #333; /* Bottom border for separation */
+}
+
+.comment.reply {
+  margin-left: 40px; /* Indent for replies */
+  border-left: 2px solid #7289da; /* Visual indicator for replies */
+  padding-left: 10px; /* Padding for the left side */
+}
+
+.commentProfileImg {
+  width: 40px; /* Profile image size */
+  height: 40px;
+  border-radius: 50%; /* Circular profile image */
+  object-fit: cover; /* Maintain aspect ratio */
+  margin-right: 10px; /* Space between image and text */
+}
+
+.commentBody {
+  flex: 1; /* Allow the body to take available space */
+}
+
+.commentUsername {
+  font-weight: bold; /* Bold username */
+  color: #3ea6ff; /* Username color */
+  margin-right: 8px; /* Space between username and comment text */
+}
+
+.commentDate {
+  font-size: 12px; /* Font size for date */
+  color: #aaa; /* Date color */
+}
+
+.commentText {
+  margin: 4px 0; /* Margin for comment text */
+}
+
+.commentInputContainer {
+  margin: 10px 0; /* Margin for input container */
+  display: flex; /* Flexbox for alignment */
+  gap: 10px; /* Space between input and button */
+}
+
+.commentInput {
+  flex: 1; /* Allow the input to take available space */
+  background-color: #3a3f43; /* Background color */
+  border: 1px solid #555; /* Border color */
+  border-radius: 5px; /* Rounded corners */
+  padding: 8px; /* Padding inside the input */
+  color: white; /* Text color */
+}
+
+.replySection {
+  margin-left: 40px; /* Indent for reply section */
+}
+
+.postButton {
+  padding: 6px 12px; /* Padding for the button */
+  background-color: #007bff; /* Button background color */
+  border: none; /* Remove border */
+  color: white; /* Button text color */
+  border-radius: 5px; /* Rounded corners for the button */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.postUserInfo {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.postMetadata {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #65676b;
+}
+
+.postFeeling {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.postLocation {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.postTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.postTag {
+  background-color: #f0f2f5;
+  color: #1877f2;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.postTag:hover {
+  background-color: #e4e6eb;
 }
 
 /* ... rest of the file remains unchanged ... */

@@ -109,3 +109,11 @@
   text-align: center;
   padding: 10px;
 }
+
+.comment {
+  /* Add styles for individual comments */
+}
+
+.comment input {
+  /* Add styles for the comment input field */
+}

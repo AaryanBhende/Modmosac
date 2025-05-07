@@ -8,7 +8,7 @@ import Modal from "../Modal/Modal";
 import Online from "../online/Online";
 import { SocketContext } from "../../context/SocketContext";
 
-export default function Rightbar({ user }) {
+export default function Rightbar({ user, postId }) {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [friends, setFriends] = useState([]);
   const [onlineFriends, setOnlineFriends] = useState([]);
@@ -16,15 +16,16 @@ export default function Rightbar({ user }) {
   const [followed, setFollowed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    username: "",
-    city: "",
-    from: "",
-    relationship: 1,
-  });
-
+  const [formData, setFormData] = useState({ username: "", city: "", from: "", relationship: 1 });
   const { onlineUsers } = useContext(SocketContext);
+  const [modifiedFields, setModifiedFields] = useState({});
+  const [usernameError, setUsernameError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [coverPicture, setCoverPicture] = useState(null);
+  const [profilePreview, setProfilePreview] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
+  const [postLikers, setPostLikers] = useState([]);
 
   useEffect(() => {
     if (user) {
@@ -37,14 +38,6 @@ export default function Rightbar({ user }) {
     }
   }, [user]);
 
-  const [modifiedFields, setModifiedFields] = useState({});
-  const [usernameError, setUsernameError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [coverPicture, setCoverPicture] = useState(null);
-  const [profilePreview, setProfilePreview] = useState(null);
-  const [coverPreview, setCoverPreview] = useState(null);
-
   useEffect(() => {
     if (currentUser && user) {
       setFollowed(currentUser.followings.includes(user._id));
@@ -53,15 +46,15 @@ export default function Rightbar({ user }) {
 
   useEffect(() => {
     if (user && user._id) {
-    const getFriends = async () => {
-      try {
-        const friendList = await axios.get("/users/friends/" + user._id);
-        setFriends(friendList.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getFriends();
+      const getFriends = async () => {
+        try {
+          const res = await axios.get("/users/friends/" + user._id);
+          setFriends(res.data);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      getFriends();
     }
   }, [user]);
 
@@ -70,10 +63,7 @@ export default function Rightbar({ user }) {
       const getMyFriends = async () => {
         try {
           const res = await axios.get("/users/friends/" + currentUser._id);
-          // Filter friends who are online
-          const online = res.data.filter(friend => 
-            onlineUsers.includes(friend._id)
-          );
+          const online = res.data.filter(friend => onlineUsers.includes(friend._id));
           setOnlineFriends(online);
         } catch (err) {
           console.error("Error fetching friends:", err);
@@ -83,41 +73,28 @@ export default function Rightbar({ user }) {
     }
   }, [currentUser, onlineUsers]);
 
-  const HomeRightbar = () => {
-    return (
-      <>
-        <h4 className="rightbarTitle">Online Friends</h4>
-        <ul className="rightbarFriendList">
-          {onlineFriends.length > 0 ? (
-            onlineFriends.map((user) => (
-              <Link 
-                to={`/profile/${user.username}`} 
-                style={{ textDecoration: "none" }}
-                key={user._id}
-              >
-                <Online key={user._id} user={user} />
-              </Link>
-            ))
-          ) : (
-            <div className="noOnlineFriends">No friends online right now</div>
-          )}
-        </ul>
-      </>
-    );
-  };
+  useEffect(() => {
+    if (postId) {
+      const fetchLikers = async () => {
+        try {
+          const res = await axios.get(`/posts/${postId}/likes`);
+          setPostLikers(res.data);
+        } catch (err) {
+          console.error("Error fetching post likers:", err);
+        }
+      };
+      fetchLikers();
+    }
+  }, [postId]);
 
   const handleClick = async () => {
     setLoading(true);
     try {
       if (followed) {
-        await axios.put(`/users/${user._id}/unfollow`, {
-          userId: currentUser._id,
-        });
+        await axios.put(`/users/${user._id}/unfollow`, { userId: currentUser._id });
         dispatch({ type: "UNFOLLOW", payload: user._id });
       } else {
-        await axios.put(`/users/${user._id}/follow`, {
-          userId: currentUser._id,
-        });
+        await axios.put(`/users/${user._id}/follow`, { userId: currentUser._id });
         dispatch({ type: "FOLLOW", payload: user._id });
       }
       const updatedUser = await axios.get(`/users/${currentUser._id}`);
@@ -132,22 +109,10 @@ export default function Rightbar({ user }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
     const isModified = value !== user[name];
-    
-    setModifiedFields(prev => ({
-      ...prev,
-      [name]: isModified
-    }));
-
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    if (name === 'username') {
-      setUsernameError('');
-    }
+    setModifiedFields(prev => ({ ...prev, [name]: isModified }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'username') setUsernameError('');
   };
 
   const checkUsername = async (username) => {
@@ -161,17 +126,17 @@ export default function Rightbar({ user }) {
     }
   };
 
-  const handleFileChange = (event, type) => {
-    const file = event.target.files[0];
+  const handleFileChange = (e, type) => {
+    const file = e.target.files[0];
     if (file) {
       if (type === 'profile') {
         setProfilePicture(file);
         setProfilePreview(URL.createObjectURL(file));
-        setModifiedFields(prev => ({...prev, profilePicture: true}));
+        setModifiedFields(prev => ({ ...prev, profilePicture: true }));
       } else {
         setCoverPicture(file);
         setCoverPreview(URL.createObjectURL(file));
-        setModifiedFields(prev => ({...prev, coverPicture: true}));
+        setModifiedFields(prev => ({ ...prev, coverPicture: true }));
       }
     }
   };
@@ -179,39 +144,28 @@ export default function Rightbar({ user }) {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-
     try {
       setIsSubmitting(true);
-
       if (modifiedFields.username) {
-        const isAvailable = await checkUsername(formData.username);
-        if (!isAvailable) {
+        const available = await checkUsername(formData.username);
+        if (!available) {
           setUsernameError("Username already exists");
           setIsSubmitting(false);
           return;
         }
       }
-
-      const formDataToSend = new FormData();
-      formDataToSend.append("userId", currentUser._id);
-
+      const dataToSend = new FormData();
+      dataToSend.append("userId", currentUser._id);
       Object.keys(modifiedFields).forEach(field => {
         if (modifiedFields[field] && !['profilePicture', 'coverPicture'].includes(field)) {
-          formDataToSend.append(field, formData[field]);
+          dataToSend.append(field, formData[field]);
         }
       });
+      if (profilePicture) dataToSend.append("profilePicture", profilePicture);
+      if (coverPicture) dataToSend.append("coverPicture", coverPicture);
 
-      if (profilePicture) {
-        formDataToSend.append("profilePicture", profilePicture);
-      }
-      if (coverPicture) {
-        formDataToSend.append("coverPicture", coverPicture);
-      }
-
-      const res = await axios.put(`/users/${currentUser._id}`, formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await axios.put(`/users/${currentUser._id}`, dataToSend, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       dispatch({ type: "UPDATE_USER", payload: res.data });
@@ -225,6 +179,23 @@ export default function Rightbar({ user }) {
     }
   };
 
+  const HomeRightbar = () => (
+    <>
+      <h4 className="rightbarTitle">Online Friends</h4>
+      <ul className="rightbarFriendList">
+        {onlineFriends.length > 0 ? (
+          onlineFriends.map((user) => (
+            <Link to={`/profile/${user.username}`} style={{ textDecoration: "none" }} key={user._id}>
+              <Online user={user} />
+            </Link>
+          ))
+        ) : (
+          <div className="noOnlineFriends">No friends online right now</div>
+        )}
+      </ul>
+    </>
+  );
+
   const ProfileRightbar = () => (
     <>
       {user && user.username !== currentUser.username && (
@@ -233,54 +204,54 @@ export default function Rightbar({ user }) {
           {!loading && (followed ? <Remove /> : <Add />)}
         </button>
       )}
-      
-        <h4 className="rightbarTitle">User information</h4>
-      
-        <div className="rightbarInfo">
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">City:</span>
+      <h4 className="rightbarTitle">User information</h4>
+      <div className="rightbarInfo">
+        <div className="rightbarInfoItem">
+          <span className="rightbarInfoKey">City:</span>
           <span className="rightbarInfoValue">{user?.city}</span>
-          </div>
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">From:</span>
+        </div>
+        <div className="rightbarInfoItem">
+          <span className="rightbarInfoKey">From:</span>
           <span className="rightbarInfoValue">{user?.from}</span>
-          </div>
-          <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Relationship:</span>
-            <span className="rightbarInfoValue">
-            {user?.relationship === 1
-                ? "Single"
-              : user?.relationship === 2
-                ? "Married"
-                : "-"}
-            </span>
-          </div>
         </div>
-        <h4 className="rightbarTitle">User friends</h4>
-        <div className="rightbarFollowings">
-          {friends.map((friend) => (
-            <Link
-            key={friend._id}
-            to={`/profile/${friend.username}`}
-              style={{ textDecoration: "none" }}
-            >
-              <div className="rightbarFollowing">
-                <img
-                  src={
-                    friend.profilePicture
-                      ? PF + friend.profilePicture
-                    : PF + "person/default.png"
-                  }
-                  alt=""
-                  className="rightbarFollowingImg"
-                />
-                <span className="rightbarFollowingName">{friend.username}</span>
-              </div>
-            </Link>
-          ))}
+        <div className="rightbarInfoItem">
+          <span className="rightbarInfoKey">Relationship:</span>
+          <span className="rightbarInfoValue">{user?.relationship === 1 ? "Single" : user?.relationship === 2 ? "Married" : "-"}</span>
         </div>
-      </>
-    );
+      </div>
+      <h4 className="rightbarTitle">User friends</h4>
+      <div className="rightbarFollowings">
+        {friends.map((friend) => (
+          <a key={friend._id} href={`/profile/${friend.username}`} style={{ textDecoration: "none" }}>
+            <div className="rightbarFollowing">
+              <img
+                src={friend.profilePicture ? PF + friend.profilePicture : PF + "person/default.png"}
+                alt=""
+                className="rightbarFollowingImg"
+              />
+              <span className="rightbarFollowingName">{friend.username}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+      {postId && (
+        <>
+          <h4 className="rightbarTitle">People who liked this post</h4>
+          <ul className="rightbarFriendList">
+            {postLikers.length > 0 ? (
+              postLikers.map((liker) => (
+                <Link key={liker._id} to={`/profile/${liker.username}`} style={{ textDecoration: "none" }}>
+                  <Online user={liker} />
+                </Link>
+              ))
+            ) : (
+              <div className="noOnlineFriends">No likes yet</div>
+            )}
+          </ul>
+        </>
+      )}
+    </>
+  );
 
   return (
     <div className="rightbar">

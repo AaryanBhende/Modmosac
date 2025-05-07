@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema(
@@ -18,6 +17,18 @@ const PostSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    tags: {
+      type: Array,
+      default: [],
+    },
+    location: {
+      type: String,
+      default: "",
+    },
+    feeling: {
+      type: String,
+      default: "",
+    }
   },
   { timestamps: true }
 );

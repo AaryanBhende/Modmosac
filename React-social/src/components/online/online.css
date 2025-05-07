@@ -3,11 +3,13 @@
     align-items: center;
     margin-bottom: 15px;
     cursor: pointer;
-    transition: transform 0.2s;
+    padding: 8px;
+    border-radius: 10px;
+    transition: background-color 0.3s;
   }
   
   .rightbarFriend:hover {
-    transform: scale(1.05);
+    background-color: #f0f2f5;
   }
   
   .rightbarProfileImgContainer {
@@ -22,18 +24,26 @@
     object-fit: cover;
   }
   
-  .rightbarOnline{
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background-color: #43b581;
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      border: 2px solid #36393e;
+  .rightbarOnline {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: limegreen;
+    position: absolute;
+    top: -2px;
+    right: 0;
+    border: 2px solid white;
   }
   
-  .rightbarUsername{
-      font-weight: 500;
-      color: #ffffff;
+  .rightbarUsername {
+    font-weight: 500;
+    font-size: 14px;
+    color: #7289da; /* Discord-like blue color */
+    transition: color 0.2s;
+    text-decoration: none;
+    margin-left: 5px;
+  }
+  
+  .rightbarFriend:hover .rightbarUsername {
+    color: #5b6eae; /* Darker shade on hover */
   }

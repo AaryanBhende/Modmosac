@@ -1,0 +1,100 @@
+.searchDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #36393e;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 8px;
+  padding: 12px;
+}
+
+.searchSection {
+  margin-bottom: 16px;
+}
+
+.searchSection h3 {
+  color: #b9bbbe;
+  font-size: 14px;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #2f3136;
+}
+
+.searchItem {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #dcddde;
+  transition: background-color 0.2s;
+}
+
+.searchItem:hover {
+  background-color: #2f3136;
+}
+
+.searchItemImg {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.searchItemText {
+  font-size: 14px;
+}
+
+.searchItemContent {
+  flex: 1;
+}
+
+.searchItemTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.searchItemTag {
+  color: #7289da;
+  font-size: 12px;
+}
+
+.searchLoading,
+.searchError,
+.noResults {
+  padding: 16px;
+  text-align: center;
+  color: #b9bbbe;
+  font-size: 14px;
+}
+
+.searchError {
+  color: #ed4245;
+}
+
+/* Scrollbar styling */
+.searchDropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.searchDropdown::-webkit-scrollbar-track {
+  background: #2f3136;
+  border-radius: 4px;
+}
+
+.searchDropdown::-webkit-scrollbar-thumb {
+  background: #202225;
+  border-radius: 4px;
+}
+
+.searchDropdown::-webkit-scrollbar-thumb:hover {
+  background: #40444b;
+} 
