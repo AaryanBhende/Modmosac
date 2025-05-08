@@ -2,18 +2,29 @@ const express = require("express");
 const router = express.Router();
 const Post = require("../models/Post");
 const User = require("../models/User");
+const axios = require("axios");
+
 
 // Create a post
 router.post("/", async (req, res) => {
     const newPost = new Post(req.body);
     try {
+        // Call AI classification endpoint before saving
+        const aiResponse = await axios.post("http://127.0.0.1:8000/get-inference", {
+            comment: req.body.desc // Use the 'desc' field from post body
+        });
+
+        if (aiResponse.data.offensive === true) {
+            return res.status(400).json(aiResponse.data);
+        }
+
         const savedPost = await newPost.save();
-        //AI api
         res.status(200).json(savedPost);
     } catch (err) {
         res.status(500).json({ error: "Failed to create post", details: err });
     }
 });
+
 
 // Update a post
 router.put("/:id", async (req, res) => {

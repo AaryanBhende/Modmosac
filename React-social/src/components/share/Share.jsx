@@ -1,5 +1,4 @@
-// File: src/components/share/Share.jsx
-
+// File: Share.jsx
 import "./share.css";
 import { PermMedia, Label, Room, EmojiEmotions, Cancel } from "@mui/icons-material";
 import { useContext, useRef, useState } from "react";
@@ -31,6 +30,7 @@ export default function Share() {
   const [showEmotions, setShowEmotions] = useState(false);
   const [feeling, setFeeling] = useState("");
   const [currentTag, setCurrentTag] = useState("");
+  const [offensiveWarning, setOffensiveWarning] = useState(null);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -64,7 +64,11 @@ export default function Share() {
       desc.current.value = "";
       window.location.reload();
     } catch (err) {
-      console.error(err);
+      if (err.response && err.response.status === 400 && err.response.data?.offensive) {
+        setOffensiveWarning(err.response.data.message || "Your content is offensive and violates community standards.");
+      } else {
+        console.error(err);
+      }
     }
   };
 
@@ -92,6 +96,14 @@ export default function Share() {
   return (
     <div className="share">
       <div className="shareWrapper">
+        {offensiveWarning && (
+          <div className="offensiveModal">
+            <h3>🚫 Offensive Content Detected</h3>
+            <p>{offensiveWarning}</p>
+            <button onClick={() => setOffensiveWarning(null)}>Close</button>
+          </div>
+        )}
+
         <div className="shareTop">
           <img
             className="shareProfileImg"

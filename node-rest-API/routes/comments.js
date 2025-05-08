@@ -1,13 +1,23 @@
 const router = require("express").Router();
 const Comment = require("../models/Comment");
+const axios = require("axios");
 
 // Create a comment
 router.post("/", async (req, res) => {
   const newComment = new Comment(req.body);
   try {
-    const savedComment = await newComment.save();
-    //AI api
-    res.status(200).json(savedComment);
+    // Call AI classification endpoint
+    const aiResponse = await axios.post("http://127.0.0.1:8000/get-inference", {
+      comment: req.body.text
+    });
+    console.log(aiResponse.data);
+    if (aiResponse.data.offensive === true) {
+      res.status(400).json(aiResponse.data)
+    }
+    else{
+      const savedComment = await newComment.save();
+      res.status(200).json(savedComment);
+    }
   } catch (err) {
     res.status(500).json(err);
   }
@@ -44,4 +54,4 @@ router.get("/replies/:commentId", async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

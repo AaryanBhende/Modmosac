@@ -1,3 +1,4 @@
+// File: Comment.jsx
 import React, { useState, useEffect } from "react";
 import "./comment.css";
 import { format } from "timeago.js";
@@ -13,8 +14,8 @@ const Comment = ({ comment, onReply, replies = [] }) => {
   const [commentUser, setCommentUser] = useState(null);
   const [replyUsers, setReplyUsers] = useState({});
   const [showReplies, setShowReplies] = useState(false);
+  const [offensiveWarning, setOffensiveWarning] = useState(null);
 
-  // Fetch comment user data
   useEffect(() => {
     const fetchCommentUser = async () => {
       try {
@@ -24,24 +25,17 @@ const Comment = ({ comment, onReply, replies = [] }) => {
         console.error("Error fetching comment user:", err);
       }
     };
-    
     if (comment.userId) {
       fetchCommentUser();
     }
   }, [comment.userId]);
 
-  // Fetch replies and their user data
   useEffect(() => {
     const fetchReplies = async () => {
       try {
         const res = await axios.get(`/comments/replies/${comment._id}`);
         setCommentReplies(res.data || []);
-
-        // Fetch user data for each reply
-        const userPromises = res.data.map(reply => 
-          axios.get(`/users?userId=${reply.userId}`)
-        );
-        
+        const userPromises = res.data.map(reply => axios.get(`/users?userId=${reply.userId}`));
         const userResponses = await Promise.all(userPromises);
         const userMap = {};
         userResponses.forEach((response, index) => {
@@ -52,7 +46,6 @@ const Comment = ({ comment, onReply, replies = [] }) => {
         console.error("Error fetching replies:", err);
       }
     };
-
     fetchReplies();
   }, [comment._id]);
 
@@ -69,7 +62,7 @@ const Comment = ({ comment, onReply, replies = [] }) => {
   const handleReplySubmit = async () => {
     if (!replyText.trim()) return;
     const replyContent = replyTo ? `@${replyTo} ${replyText}` : replyText;
-    
+
     try {
       const res = await axios.post("/comments", {
         postId: comment.postId,
@@ -77,36 +70,36 @@ const Comment = ({ comment, onReply, replies = [] }) => {
         parentId: comment._id,
       });
 
-      // Fetch user data for the new reply
       const userRes = await axios.get(`/users?userId=${res.data.userId}`);
-      setReplyUsers(prev => ({
-        ...prev,
-        [res.data._id]: userRes.data
-      }));
-
-      // Add the new reply to the existing replies
+      setReplyUsers(prev => ({ ...prev, [res.data._id]: userRes.data }));
       setCommentReplies(prev => [...prev, res.data]);
-      
-      // Clear the form
       setReplyText("");
       setReplyOpen(true);
       setReplyTo(null);
 
-      if (onReply) {
-        onReply(comment._id, replyContent);
-      }
+      if (onReply) onReply(comment._id, replyContent);
     } catch (err) {
-      console.error("Error posting reply:", err);
+      if (err.response?.status === 400 && err.response.data?.offensive) {
+        setOffensiveWarning(err.response.data.message || "Your reply contains offensive content.");
+      } else {
+        console.error("Error posting reply:", err);
+      }
     }
   };
 
   return (
     <div className="comment-container">
+      {offensiveWarning && (
+        <div className="offensiveModal">
+          <h3>🚫 Offensive Comment Detected</h3>
+          <p>{offensiveWarning}</p>
+          <button onClick={() => setOffensiveWarning(null)}>Close</button>
+        </div>
+      )}
+
       <div className="comment">
         <img
-          src={commentUser?.profilePicture 
-            ? PF + commentUser.profilePicture 
-            : PF + "person/default.png"}
+          src={commentUser?.profilePicture ? PF + commentUser.profilePicture : PF + "person/default.png"}
           alt=""
           className="commentImg"
         />
@@ -142,9 +135,7 @@ const Comment = ({ comment, onReply, replies = [] }) => {
             return (
               <div key={reply._id} className="comment reply flatReply">
                 <img
-                  src={replyUser?.profilePicture 
-                    ? PF + replyUser.profilePicture 
-                    : PF + "person/default.png"}
+                  src={replyUser?.profilePicture ? PF + replyUser.profilePicture : PF + "person/default.png"}
                   alt=""
                   className="commentImg"
                 />

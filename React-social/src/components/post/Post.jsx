@@ -1,3 +1,4 @@
+// File: Post.jsx
 import "./post.css";
 import { MoreVert, Bookmark, BookmarkBorder, Room } from '@mui/icons-material';
 import { useEffect, useContext, useState, useRef } from "react";
@@ -16,6 +17,8 @@ export default function Post({ post }) {
   const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [offensiveWarning, setOffensiveWarning] = useState(null);
+
   const PF = process.env.REACT_APP_PUBLIC_FOLDER; 
   const { user: currentUser } = useContext(AuthContext);
   const optionsRef = useRef();
@@ -89,12 +92,24 @@ export default function Post({ post }) {
       const res = await axios.get(`/comments/${post._id}`);
       setComments(res.data || []);
     } catch (err) {
-      console.error(err);
+      if (err.response?.status === 400 && err.response.data?.offensive) {
+        setOffensiveWarning(err.response.data.message || "Your comment contains offensive content.");
+      } else {
+        console.error(err);
+      }
     }
   };
 
   return (
     <div className="post">
+      {offensiveWarning && (
+        <div className="offensiveModal">
+          <h3>🚫 Offensive Comment Detected</h3>
+          <p>{offensiveWarning}</p>
+          <button onClick={() => setOffensiveWarning(null)}>Close</button>
+        </div>
+      )}
+
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
@@ -162,6 +177,7 @@ export default function Post({ post }) {
           </div>
         </div>
       </div>
+
       {showComments && (
         <div className="commentSection">
           <form onSubmit={handleCommentSubmit} className="commentInputContainer">

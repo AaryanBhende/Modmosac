@@ -1,0 +1,8 @@
+fastapi
+pydantic
+typing-extensions
+enum
+langchain-google-genai
+langchain
+google-generative-language
+dotenv
